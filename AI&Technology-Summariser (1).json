@@ -1,0 +1,308 @@
+{
+  "name": "AI&Technology-Summariser",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            },
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        96
+      ],
+      "id": "1446a0d9-9c03-4e66-8f03-de8685cf777a",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://aibusiness.com/rss.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        144,
+        -96
+      ],
+      "id": "5b09b852-206e-4534-a988-46e1ef14e985",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {
+          "includeBinaries": false
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        592,
+        96
+      ],
+      "id": "513de6a0-7bd5-48a5-ba33-1ef1ad399c94",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "you are an AI news summarizer handling mutiple categories\nAnalyze the news articles and create an email summary.\n for each article:\n 1. create a headline in ALL CAPS\n 2. write a 2-3 sentences summary\n 3. Include the article link\n format as: \nsubject: Todays AI News \nHi there,\n Here's your Tech brief:\nAI NEWS\nfor each AI-related item ,output;\nHEADLINE IN ALL CAPS\nSummary in 1-2 sentences.\nLink:<poste link>\nTechnology NEWS\nfor each border technology-related item ,output;\nHEADLINE IN ALL CAPS\nSummary in 1-2 sentences.\nLink:<poste link>\n HEADLINES IN CAPS\n Summary of what happened and why it matters...\nUpcoming AI Events\nif no events found: \"NO AL events scheduled this week\"\nfor each event item\nHEADLINE IN ALL CAPS\nsummary in 1-2 sentences\nlink:<poste link>\nkeep the summaries professional concise and easy to read.\nsign off as \"you ai intellegence team\"\n "
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        816,
+        96
+      ],
+      "id": "a3e8f695-6eda-49e6-9d16-165c32b7f81b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        896,
+        320
+      ],
+      "id": "1f974121-8483-4e19-99b5-3b2809380694",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0Q4Q6N1vzLuk6FGZ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        144,
+        96
+      ],
+      "id": "291e681d-145b-41d8-8ea6-85f32d80855b",
+      "name": "RSS Read1"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        368,
+        80
+      ],
+      "id": "114e9c6f-438a-493b-88f5-6978fb4f975a",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sendTo": "ammulukanna52@gmail.com",
+        "subject": "AI & Tech related",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1168,
+        96
+      ],
+      "id": "fe51f4f7-2165-4093-b919-46303901195b",
+      "name": "Send a message",
+      "webhookId": "75d426c2-a574-4f88-bd10-69f0d6ba420f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3g6FNaZa2Ra75sRE",
+          "name": "Gmail account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "Coffee"
+            },
+            {
+              "name": "location",
+              "value": "Austin, Texas, United States"
+            },
+            {
+              "name": "google_domain",
+              "value": "google.com"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "us"
+            },
+            {
+              "name": "api_key",
+              "value": "7b1a4ebe3e9bbdef708d4722dba202decb1d4a6013435b9aebe58925a60490f6"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        144,
+        288
+      ],
+      "id": "60fadcea-d2be-4fd6-afa5-fb57846f4321",
+      "name": "Fetch event"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch event": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "df4bcbcf-b121-4aa5-895c-5daaf7a62771",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc181bbfa547004454ce59879cb18c3f170c6662a79f04522976a4e754f37d1b"
+  },
+  "id": "cblrtmS2gSgDUe9m",
+  "tags": []
+}
